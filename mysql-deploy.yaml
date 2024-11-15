@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mysql
+  template:
+    metadata:
+      labels:
+        app: mysql
+    spec:
+      containers:
+      - name: mysql
+        image: mysql:5.7
+        env:
+        - name: MYSQL_ROOT_PASSWORD
+          value: "rootpassword" # Set your root password
+        - name: MYSQL_DATABASE
+          value: "traffic" # Optional: specify the database name
+        ports:
+        - containerPort: 3306
+        volumeMounts:
+        - name: traffic-sql-config
+          mountPath: /docker-entrypoint-initdb.d/traffic.sql
+          subPath: traffic.sql
+      volumes:
+      - name: traffic-sql-config
+        configMap:
+          name: traffic-sql-config
